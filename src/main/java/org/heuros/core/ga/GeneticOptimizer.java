@@ -1,9 +1,10 @@
 package org.heuros.core.ga;
 
-import org.heuros.core.ga.chromosome.IChromosomeFactory;
-import org.heuros.core.ga.chromosome.IChromosome;
+import org.heuros.core.ga.chromosome.ChromosomeFactory;
+import org.heuros.core.ga.chromosome.Chromosome;
 import org.heuros.core.ga.selection.Selector;
-import org.heuros.core.ga.crossover.ICrossoverOperator;
+import org.heuros.core.ga.crossover.Crossover;
+import org.heuros.core.ga.decoder.Decoder;
 import org.heuros.core.ga.mutation.Mutator;
 
 /**
@@ -14,12 +15,13 @@ import org.heuros.core.ga.mutation.Mutator;
  * Runs all functions according to chosen parameters and implementation classes.
  *
  */
-public class GeneticOptimizer<T, M> {
+public class GeneticOptimizer<T, O> {
 
-    private IChromosomeFactory<T, M> chromosomeFactory = null;
-    private Selector<T, M> selector = null;
-    private ICrossoverOperator<T, M> crossoverOperator = null;
-    private Mutator<T, M> mutator = null;
+    private ChromosomeFactory<T> chromosomeFactory = null;
+    private Selector<T> selector = null;
+    private Crossover<T> crossoverOperator = null;
+    private Mutator<T> mutator = null;
+    private Decoder<T, O> decoder = null;
 
     private long maxElapsedTimeInNanoSecs = 60000000000l;
     private int maxNumOfIterations = 500;
@@ -29,14 +31,14 @@ public class GeneticOptimizer<T, M> {
     private int numOfEliteChromosomes = 4;
     private boolean allowDublicateChromosomes = false;
 
-    private IChromosome<T, M> best = null;
+    private Chromosome<T> best = null;
 
-    private IChromosome<T, M> population[] = null;
-    private IChromosome<T, M> children[] = null;
+    private Chromosome<T> population[] = null;
+    private Chromosome<T> children[] = null;
 
     private float mutationRate = 0.01f;
 
-    private GeneticIterationListener<T, M> geneticIterationListener = null;
+    private GeneticIterationListener geneticIterationListener = null;
 
     private boolean initializePopulation() {
 
@@ -45,7 +47,7 @@ public class GeneticOptimizer<T, M> {
 
         int i = 0;
 
-        IChromosome<T, M> chromosome = null;
+        Chromosome<T> chromosome = null;
         boolean addable = true;
 
         while (i < populationSize) {
@@ -69,8 +71,8 @@ public class GeneticOptimizer<T, M> {
     }
 
     private void orderPopulation() {
-        IChromosome<T, M> chromosome = null;
-        IChromosome<T, M> iChromosome = null;
+        Chromosome<T> chromosome = null;
+        Chromosome<T> iChromosome = null;
 
         for (int i = 0; i < populationSize - 1; i++) {
             for (int j = populationSize - 1; j > i; j--) {
@@ -88,8 +90,8 @@ public class GeneticOptimizer<T, M> {
     private void generateChildren(int iteration, int numOfIterationsWOProgress) throws CloneNotSupportedException,
                                                                                     InterruptedException {
 
-        IChromosome<T, M> mother = null;
-        IChromosome<T, M> father = null;
+        Chromosome<T> mother = null;
+        Chromosome<T> father = null;
 
         while (numOfChildrenGeneratedInLastRound < minNumOfChildren) {
 
@@ -111,8 +113,8 @@ public class GeneticOptimizer<T, M> {
     private void mutateChildren(int iteration, int numOfIterationsWOProgress) throws CloneNotSupportedException,
                                                                                     	InterruptedException {
 
-        IChromosome<T, M> child = null;
-        IChromosome<T, M> mutatedChild = null;
+        Chromosome<T> child = null;
+        Chromosome<T> mutatedChild = null;
 
         /*
          * Half of the children will be generated using crossover operator.
@@ -146,11 +148,17 @@ public class GeneticOptimizer<T, M> {
         }
     }
 
+    private void decode() {
+    	for (int i = 0; i < numOfChildrenGeneratedInLastRound; i++) {
+    		Chromosome<T> child = children[i];
+    	}
+    }
+
     private void replacePopulation() {
 
         int extendedPopSize = populationSize;
 
-        IChromosome<T, M> child = null;
+        Chromosome<T> child = null;
         boolean canBeAdded = true;
 
         for (int i = 0; i < numOfChildrenGeneratedInLastRound; i++) {
@@ -178,8 +186,8 @@ public class GeneticOptimizer<T, M> {
          * 
          */
 
-        IChromosome<T, M> chromosome = null;
-        IChromosome<T, M> iChromosome = null;
+        Chromosome<T> chromosome = null;
+        Chromosome<T> iChromosome = null;
 
         for (int i = 0; i < extendedPopSize - 1; i++) {
             for (int j = extendedPopSize - 1; j > i; j--) {
@@ -200,107 +208,6 @@ public class GeneticOptimizer<T, M> {
         for (int i = numOfEliteChromosomes; i < populationSize; i++) {
             selector.replaceChromosomeForSurvival(population, i, extendedPopSize);
         }
-
-//        ArrayList<IChromosome<T, M>> ol = new ArrayList<IChromosome<T, M>>();
-//        IChromosome<T, M> child = null;
-//        boolean canBeAdded = true;
-//
-//        for (int i = 0; i < numOfChildrenGeneratedInLastRound; i++) {
-//            child = children[i];
-//
-//            canBeAdded = true;
-//
-//            if (!allowDublicateChromosomes) {
-//                for (int j = 0; j < populationSize; j++) {
-//                    if (child.isEqual(population[j])) {
-//                        canBeAdded = false;
-//                        break;
-//                    }
-//                }
-//
-//                for (int j = 0; j < ol.size(); j++) {
-//                    if (child.isEqual(ol.get(j))) {
-//                        canBeAdded = false;
-//                        break;
-//                    }
-//                }
-//            }
-//
-//            if (canBeAdded) {
-//                ol.add(child);
-//            }
-//        }
-//
-//        for (int i = 0; i < populationSize; i++) {
-//            ol.add(population[i]);
-//        }
-//
-//        /*
-//         * Order population and children chromosome objects list ol.
-//         * 
-//         */
-//        int olSize = ol.size();
-//
-//        IChromosome<T, M> chromosome = null;
-//        IChromosome<T, M> iChromosome = null;
-//
-//        for (int i = 0; i < olSize - 1; i++) {
-//            for (int j = olSize - 1; j > i; j--) {
-//                chromosome = ol.get(i);
-//                iChromosome = ol.get(j);
-//
-//                if (chromosome.getFitness() > iChromosome.getFitness()) {
-//                    ol.set(i, iChromosome);
-//                    ol.set(j, chromosome);
-//                }
-//            }
-//        }
-//
-//        /*
-//         * Keep first chromosomes as elite ones.
-//         * 
-//         */
-//        for (int i = 0; i < numOfEliteChromosomes; i++) {
-//            population[i] = ol.get(0);
-//            ol.remove(0);
-//        }
-//
-//        int selectedChromosomeIndex = 0;
-//        for (int i = numOfEliteChromosomes; i < populationSize; i++) {
-//            selectedChromosomeIndex = selector.selectChromosomeIndexForSurvival(ol, random);
-//            population[i] = ol.get(selectedChromosomeIndex);
-//            ol.remove(selectedChromosomeIndex);
-//        }
-//
-//        ol.clear();
-//
-//        /*
-//         * Add migrant.
-//         */
-//        int popIndex = populationSize - 1;
-//        while (!migrantArrays.isEmpty()) {
-//System.out.println("notEmpty");
-//            MigrantChromosome<M>[] candMigrants = migrantArrays.poll();
-//            for (int i = 0; i < candMigrants.length; i++) {
-//                IChromosome<T, M> migrantC = chromosomeFactory.createChromosome();
-//                migrantC.initializeChromosome(candMigrants[i].getChromosomeData());
-//
-//                canBeAdded = true;
-//
-//                if (!allowDublicateChromosomes) {
-//                    for (int j = 0; j < ol.size(); j++) {
-//                        if (migrantC.isEqual(ol.get(j))) {
-//                            canBeAdded = false;
-//                            break;
-//                        }
-//                    }
-//                }
-//
-//                if (canBeAdded) {
-//                    population[popIndex--] = migrantC;
-//                }
-//            }
-//        }
     }
 
     /**
@@ -308,7 +215,7 @@ public class GeneticOptimizer<T, M> {
      * 
      * @return IChromosome the fittest individual in the current population.
      */
-    private IChromosome<T, M> getFittestIndividual() {
+    private Chromosome<T> getFittestIndividual() {
         return population[0];
     }
 
@@ -318,7 +225,7 @@ public class GeneticOptimizer<T, M> {
      * @return IChromosome the fittest individual of the genetic optimization 
      * process.
      */
-    public IChromosome<T, M> getBest() {
+    public Chromosome<T> getBest() {
         return best;
     }
 
@@ -327,8 +234,8 @@ public class GeneticOptimizer<T, M> {
     @SuppressWarnings("unchecked")
 	protected void doMinimize() {
 
-        population = new IChromosome[populationSize + 2 * minNumOfChildren];
-        children = new IChromosome[2 * minNumOfChildren];
+        population = new Chromosome[populationSize + 2 * minNumOfChildren];
+        children = new Chromosome[2 * minNumOfChildren];
 
         int numOfIterationsWOProgress = 0;
 
@@ -343,12 +250,13 @@ public class GeneticOptimizer<T, M> {
 
                 geneticIterationListener.onProgress(0, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getFitness()));
 
-                IChromosome<T, M> ch = null;
+                Chromosome<T> ch = null;
 
 long nano1 = 0l;
 long nano2 = 0l;
 long nanoGenTot = 0l;
 long nanoMutTot = 0l;
+long nanoFitTot = 0l;
 long nanoRepTot = 0l;
 
                 for (int i = 1; i <= maxNumOfIterations; i++) {
@@ -369,6 +277,12 @@ nano2 = System.nanoTime();
 nanoMutTot += nano2 - nano1;
 nano1 = System.nanoTime();
 
+					decode();
+
+nano2 = System.nanoTime();
+nanoFitTot += nano2 - nano1;
+nano1 = System.nanoTime();
+
                     replacePopulation();
 
 nano2 = System.nanoTime();
@@ -377,7 +291,7 @@ nanoRepTot += nano2 - nano1;
                     ch = getFittestIndividual();
 
                     if (best.getFitness() > ch.getFitness()) {
-                        best = (IChromosome<T, M>) ch.clone();
+                        best = (Chromosome<T>) ch.clone();
                         numOfIterationsWOProgress = 0;
                     } else
                         numOfIterationsWOProgress++;
@@ -385,12 +299,11 @@ nanoRepTot += nano2 - nano1;
                     if ((numOfIterationsWOProgress >= maxNumOfIterationsWOProgress)
                             || ((System.nanoTime() - optStartTime) >= maxElapsedTimeInNanoSecs))
                         break;
-
-nano2 = System.nanoTime();
                 }
 
 System.out.println("gen-" + nanoGenTot / maxNumOfIterations +
 					", mut-" + nanoMutTot / maxNumOfIterations +
+					", fit-" + nanoFitTot / maxNumOfIterations +
                     ", rep-" + nanoRepTot / maxNumOfIterations);
 
                 geneticIterationListener.onProgress(maxNumOfIterations, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getFitness()));
@@ -401,186 +314,129 @@ System.out.println("gen-" + nanoGenTot / maxNumOfIterations +
         }
     }
 
-    /**
-     * @return the numOfEliteChromosomes
-     */
-    public int getNumOfEliteChromosomes() {
-        return numOfEliteChromosomes;
-    }
+	public ChromosomeFactory<T> getChromosomeFactory() {
+		return chromosomeFactory;
+	}
 
-    /**
-     * @param numOfEliteChromosomes the numOfEliteChromosomes to set
-     */
-    public void setNumOfEliteChromosomes(int numOfEliteChromosomes) {
-        this.numOfEliteChromosomes = numOfEliteChromosomes;
-    }
+	public GeneticOptimizer<T, O> setChromosomeFactory(ChromosomeFactory<T> chromosomeFactory) {
+		this.chromosomeFactory = chromosomeFactory;
+		return this;
+	}
 
-    /**
-     * @return the allowDublicateChromosomes
-     */
-    public boolean isAllowDublicateChromosomes() {
-        return allowDublicateChromosomes;
-    }
+	public Selector<T> getSelector() {
+		return selector;
+	}
 
-    /**
-     * @param allowDublicateChromosomes the allowDublicateChromosomes to set
-     */
-    public void setAllowDublicateChromosomes(boolean allowDublicateChromosomes) {
-        this.allowDublicateChromosomes = allowDublicateChromosomes;
-    }
+	public GeneticOptimizer<T, O> setSelector(Selector<T> selector) {
+		this.selector = selector;
+		return this;
+	}
 
-    /**
-     * @return the crossoverOperator
-     */
-    public ICrossoverOperator<T, M> getCrossoverOperator() {
-        return crossoverOperator;
-    }
+	public Crossover<T> getCrossoverOperator() {
+		return crossoverOperator;
+	}
 
-    /**
-     * @param crossoverOperator the crossoverOperator to set
-     */
-    public void setCrossoverOperator(ICrossoverOperator<T, M> crossoverOperator) {
-        this.crossoverOperator = crossoverOperator;
-    }
+	public GeneticOptimizer<T, O> setCrossoverOperator(Crossover<T> crossoverOperator) {
+		this.crossoverOperator = crossoverOperator;
+		return this;
+	}
 
-    /**
-     * @return the mutator
-     */
-    public Mutator<T, M> getMutator() {
-        return mutator;
-    }
+	public Mutator<T> getMutator() {
+		return mutator;
+	}
 
-    /**
-     * @param mutator the mutator to set
-     */
-    public void setMutator(Mutator<T, M> mutator) {
-        this.mutator = mutator;
-    }
+	public GeneticOptimizer<T, O> setMutator(Mutator<T> mutator) {
+		this.mutator = mutator;
+		return this;
+	}
 
-    /**
-     * @return the chromosomeFactory
-     */
-    public IChromosomeFactory<T, M> getChromosomeFactory() {
-        return chromosomeFactory;
-    }
+	public Decoder<T, O> getDecoder() {
+		return decoder;
+	}
 
-    /**
-     * @param chromosomeFactory the chromosomeFactory to set
-     */
-    public void setChromosomeFactory(IChromosomeFactory<T, M> chromosomeFactory) {
-        this.chromosomeFactory = chromosomeFactory;
-    }
+	public GeneticOptimizer<T, O> setDecoder(Decoder<T, O> decoder) {
+		this.decoder = decoder;
+		return this;
+	}
 
-    /**
-     * @return the selector
-     */
-    public Selector<T, M> getSelector() {
-        return selector;
-    }
+	public long getMaxElapsedTimeInNanoSecs() {
+		return maxElapsedTimeInNanoSecs;
+	}
 
-    /**
-     * @param selector the selector to set
-     */
-    public void setSelector(Selector<T, M> selector) {
-        this.selector = selector;
-    }
+	public GeneticOptimizer<T, O> setMaxElapsedTimeInNanoSecs(long maxElapsedTimeInNanoSecs) {
+		this.maxElapsedTimeInNanoSecs = maxElapsedTimeInNanoSecs;
+		return this;
+	}
 
-    /**
-     * @return the maxNumOfIterations
-     */
-    public int getMaxNumOfIterations() {
-        return maxNumOfIterations;
-    }
+	public int getMaxNumOfIterations() {
+		return maxNumOfIterations;
+	}
 
-    /**
-     * @param maxNumOfIterations the maxNumOfIterations to set
-     */
-    public void setMaxNumOfIterations(int maxNumOfIterations) {
-        this.maxNumOfIterations = maxNumOfIterations;
-    }
+	public GeneticOptimizer<T, O> setMaxNumOfIterations(int maxNumOfIterations) {
+		this.maxNumOfIterations = maxNumOfIterations;
+		return this;
+	}
 
-    /**
-     * @return the maxNumOfUselessIterations
-     */
-    public int getMaxNumOfIterationsWOProgress() {
-        return maxNumOfIterationsWOProgress;
-    }
+	public int getMaxNumOfIterationsWOProgress() {
+		return maxNumOfIterationsWOProgress;
+	}
 
-    /**
-     * @param maxNumOfIterationsWOProgress the maxNumOfIterationsWOProgress to set
-     */
-    public void setMaxNumOfIterationsWOProgress(int maxNumOfIterationsWOProgress) {
-        this.maxNumOfIterationsWOProgress = maxNumOfIterationsWOProgress;
-    }
+	public GeneticOptimizer<T, O> setMaxNumOfIterationsWOProgress(int maxNumOfIterationsWOProgress) {
+		this.maxNumOfIterationsWOProgress = maxNumOfIterationsWOProgress;
+		return this;
+	}
 
-    /**
-     * @return the populationSize
-     */
-    public int getPopulationSize() {
-        return populationSize;
-    }
+	public int getPopulationSize() {
+		return populationSize;
+	}
 
-    /**
-     * @param populationSize the populationSize to set
-     */
-    public void setPopulationSize(int populationSize) {
-        this.populationSize = populationSize;
-    }
+	public GeneticOptimizer<T, O> setPopulationSize(int populationSize) {
+		this.populationSize = populationSize;
+		return this;
+	}
 
-    /**
-     * @return the minNumOfChildren
-     */
-    public int getMinNumOfChildren() {
-        return minNumOfChildren;
-    }
+	public int getMinNumOfChildren() {
+		return minNumOfChildren;
+	}
 
-    /**
-     * @param minNumOfChildren the minNumOfChildren to set
-     */
-    public void setMinNumOfChildren(int minNumOfChildren) {
-        this.minNumOfChildren = minNumOfChildren;
-    }
+	public GeneticOptimizer<T, O> setMinNumOfChildren(int minNumOfChildren) {
+		this.minNumOfChildren = minNumOfChildren;
+		return this;
+	}
 
-    /**
-     * @return the mutationRate
-     */
-    public float getMutationRate() {
-        return mutationRate;
-    }
+	public int getNumOfEliteChromosomes() {
+		return numOfEliteChromosomes;
+	}
 
-    /**
-     * @param mutationRate the mutationRate to set
-     */
-    public void setMutationRate(float mutationRate) {
-        this.mutationRate = mutationRate;
-    }
+	public GeneticOptimizer<T, O> setNumOfEliteChromosomes(int numOfEliteChromosomes) {
+		this.numOfEliteChromosomes = numOfEliteChromosomes;
+		return this;
+	}
 
-    /**
-     * @return the geneticIterationListener
-     */
-    public GeneticIterationListener<T, M> getGeneticIterationListener() {
-        return geneticIterationListener;
-    }
+	public boolean isAllowDublicateChromosomes() {
+		return allowDublicateChromosomes;
+	}
 
-    /**
-     * @param geneticIterationListener the geneticIterationListener to set
-     */
-    public void setGeneticIterationListener(GeneticIterationListener<T, M> geneticIterationListener) {
-        this.geneticIterationListener = geneticIterationListener;
-    }
+	public GeneticOptimizer<T, O> setAllowDublicateChromosomes(boolean allowDublicateChromosomes) {
+		this.allowDublicateChromosomes = allowDublicateChromosomes;
+		return this;
+	}
 
-    /**
-     * @return the maxElapsedTimeInNanoSecs
-     */
-    public long getMaxElapsedTimeInNanoSecs() {
-        return maxElapsedTimeInNanoSecs;
-    }
+	public float getMutationRate() {
+		return mutationRate;
+	}
 
-    /**
-     * @param maxElapsedTimeInNanoSecs the maxElapsedTimeInNanoSecs to set
-     */
-    public void setMaxElapsedTimeInNanoSecs(long maxElapsedTimeInNanoSecs) {
-        this.maxElapsedTimeInNanoSecs = maxElapsedTimeInNanoSecs;
-    }
+	public GeneticOptimizer<T, O> setMutationRate(float mutationRate) {
+		this.mutationRate = mutationRate;
+		return this;
+	}
 
+	public GeneticIterationListener getGeneticIterationListener() {
+		return geneticIterationListener;
+	}
+
+	public GeneticOptimizer<T, O> setGeneticIterationListener(GeneticIterationListener geneticIterationListener) {
+		this.geneticIterationListener = geneticIterationListener;
+		return this;
+	}
 }

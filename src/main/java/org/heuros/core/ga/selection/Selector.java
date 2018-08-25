@@ -1,12 +1,12 @@
 package org.heuros.core.ga.selection;
 
-import org.heuros.core.ga.chromosome.IChromosome;
+import org.heuros.core.ga.chromosome.Chromosome;
 
 /**
  * Interface for the selection operators.
  *
  */
-public interface Selector<T, M> {
+public interface Selector<T> {
     /**
      * Selects a chromosome for reproduction (crossover) according to the 
      * algorithm of the implementing class.
@@ -16,7 +16,7 @@ public interface Selector<T, M> {
      * 
      * @return IChromosome selected chromosome object.
      */
-    public IChromosome<T, M> selectChromosomeForReproduction(IChromosome<T, M>[] population, int range);
+    public Chromosome<T> selectChromosomeForReproduction(Chromosome<T>[] population, int range);
 
     /**
      * Selects a chromosome for population replacement (survival) according to 
@@ -28,5 +28,5 @@ public interface Selector<T, M> {
      * @param rangeEnd exclusive end index of the range which is used to choose candidate chromosome.
      * 
      */
-    public void replaceChromosomeForSurvival(IChromosome<T, M>[] population, int rangeStart, int rangeEnd);
+    public void replaceChromosomeForSurvival(Chromosome<T>[] population, int rangeStart, int rangeEnd);
 }

@@ -4,7 +4,7 @@ package org.heuros.core.ga.chromosome;
  * Interface for the chromosome objects.
  * 
  */
-public interface IChromosome<T, M> extends Cloneable {
+public interface Chromosome<T> extends Cloneable {
 
     /**
      * Initializes the IChromosome object.
@@ -30,7 +30,7 @@ public interface IChromosome<T, M> extends Cloneable {
      * 
      * @return boolean true if this chromosome object equals to cand.
      */
-    public boolean isEqual(IChromosome<T, M> cand);
+    public boolean isEqual(Chromosome<T> cand);
 
     /**
      * Gives the current fitness value.
@@ -38,29 +38,6 @@ public interface IChromosome<T, M> extends Cloneable {
      * @return double fitness value of this IChromosome object.
      */
     public double getFitness();
-
-    /**
-     * Triggers the fitness calculation function of this IChromosome object.
-     * 
-     */
-    public void calculateFitness();
-
-    /**
-     * Reverts fitness value to the previously saved one.
-     * This is put for improver operator to be able to revert chromosome
-     * fitness value fast.
-     * 
-     */
-    public void revertFitness();
-
-    /**
-     * If this IChromosome object is the fittest individual in the population it
-     * gives the result of the genetic optimization process.
-     * 
-     * @return Object generated solution to the optimization process by this 
-     * IChromosome object.
-     */
-    public Object getSolution();
 
     /**
      * Gives length of the chromosome.
@@ -92,7 +69,7 @@ public interface IChromosome<T, M> extends Cloneable {
      * 
      * @return returns all genes.
      */
-    public M getGenes();
+    public T[] getGenes();
 
     /**
      * String representation of this IChromosome object.

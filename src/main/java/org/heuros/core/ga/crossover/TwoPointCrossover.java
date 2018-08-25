@@ -2,27 +2,27 @@ package org.heuros.core.ga.crossover;
 
 import java.util.Random;
 
-import org.heuros.core.ga.chromosome.IChromosome;
+import org.heuros.core.ga.chromosome.Chromosome;
 
 /**
  * Two point crossover implementation class.
  * 
  * @author Ba
  */
-public class TwoPointCrossover<T, M> implements ICrossoverOperator<T, M> {
+public class TwoPointCrossover<T> implements Crossover<T> {
 	private static Random random = new Random();
 
 	@SuppressWarnings("unchecked")
 	@Override
-    public int crossover(IChromosome<T, M> population[],
+    public int crossover(Chromosome<T> population[],
                             int startingChildIndex,
-                            IChromosome<T, M> mother,
-                            IChromosome<T, M> father,
+                            Chromosome<T> mother,
+                            Chromosome<T> father,
                             double worstFitness) throws CloneNotSupportedException {
         int res = startingChildIndex;
 
-        IChromosome<T, M> child1 = (IChromosome<T, M>) mother.clone();
-        IChromosome<T, M> child2 = (IChromosome<T, M>) father.clone();
+        Chromosome<T> child1 = (Chromosome<T>) mother.clone();
+        Chromosome<T> child2 = (Chromosome<T>) father.clone();
 
         int crossoverPosition1 = (int) Math.floor(random.nextDouble() * mother.getChromosomeLength());
         int crossoverPosition2 = (int) Math.floor(random.nextDouble() * (mother.getChromosomeLength() - crossoverPosition1)) + crossoverPosition1;

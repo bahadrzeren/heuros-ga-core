@@ -1,8 +1,8 @@
 package org.heuros.core.ga.crossover;
 
-import org.heuros.core.ga.chromosome.IChromosome;
+import org.heuros.core.ga.chromosome.Chromosome;
 
-public interface ICrossoverOperator<T, M> {
+public interface Crossover<T> {
     /**
      * Performs crossover operation according to the algorithm in the 
      * implementing class.
@@ -18,9 +18,9 @@ public interface ICrossoverOperator<T, M> {
      * @throws CloneNotSupportedException is trown if chromosome objects do not
      * implement Cloneable interface
      */
-    public int crossover(IChromosome<T, M> population[],
+    public int crossover(Chromosome<T> population[],
                             int startingChildIndex,
-                            IChromosome<T, M> mother,
-                            IChromosome<T, M> father,
+                            Chromosome<T> mother,
+                            Chromosome<T> father,
                             double worstFitness) throws CloneNotSupportedException;
 }

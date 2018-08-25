@@ -6,7 +6,7 @@ import java.util.EventListener;
  * Listener class which is triggered when a genetic iteration is completed.
  * 
  */
-public interface GeneticIterationListener<T, M> extends EventListener {
+public interface GeneticIterationListener extends EventListener {
 
     /**
      * Metod which is called after each progress.

@@ -2,27 +2,27 @@ package org.heuros.core.ga.crossover;
 
 import java.util.Random;
 
-import org.heuros.core.ga.chromosome.IChromosome;
+import org.heuros.core.ga.chromosome.Chromosome;
 
 /**
  * Uniform crossover implementation class.
  * 
  * @author Ba
  */
-public class UniformCrossover<T, M> implements ICrossoverOperator<T, M> {
+public class UniformCrossover<T> implements Crossover<T> {
 	private static Random random = new Random();
 
 	@SuppressWarnings("unchecked")
 	@Override
-    public int crossover(IChromosome<T, M> population[],
+    public int crossover(Chromosome<T> population[],
                             int startingChildIndex,
-                            IChromosome<T, M> mother,
-                            IChromosome<T, M> father,
+                            Chromosome<T> mother,
+                            Chromosome<T> father,
                             double worstFitness) throws CloneNotSupportedException {
         int res = startingChildIndex;
 
-        IChromosome<T, M> child1 = (IChromosome<T, M>) mother.clone();
-        IChromosome<T, M> child2 = (IChromosome<T, M>) father.clone();
+        Chromosome<T> child1 = (Chromosome<T>) mother.clone();
+        Chromosome<T> child2 = (Chromosome<T>) father.clone();
 
         double motherQuality = Math.abs(worstFitness - mother.getFitness());
         double fatherQuality = Math.abs(worstFitness - father.getFitness());

@@ -10,14 +10,14 @@ package org.heuros.core.ga.selection;
 
 import java.util.Random;
 
-import org.heuros.core.ga.chromosome.IChromosome;
+import org.heuros.core.ga.chromosome.Chromosome;
 
 /**
  * Binary tournament selection implementation of the ISelection interface.
  * 
  * @see Selector
  */
-public class BinaryTournamentSelector<T, M> implements Selector<T, M> {
+public class BinaryTournamentSelector<T> implements Selector<T> {
 
 	private static Random random = new Random();
 
@@ -25,11 +25,11 @@ public class BinaryTournamentSelector<T, M> implements Selector<T, M> {
      * {@inheritDoc}
      */
     @Override
-    public IChromosome<T, M> selectChromosomeForReproduction(IChromosome<T, M>[] population,
+    public Chromosome<T> selectChromosomeForReproduction(Chromosome<T>[] population,
                                                                 int range) {
 
-        IChromosome<T, M> c1 = population[(int) Math.floor(random.nextDouble() * range)];
-        IChromosome<T, M> c2 = population[(int) Math.floor(random.nextDouble() * range)];
+        Chromosome<T> c1 = population[(int) Math.floor(random.nextDouble() * range)];
+        Chromosome<T> c2 = population[(int) Math.floor(random.nextDouble() * range)];
 
         while ((c1 == c2) || c1.isEqual(c2))
             c2 = population[(int) Math.floor(random.nextDouble() * range)];
@@ -45,7 +45,7 @@ public class BinaryTournamentSelector<T, M> implements Selector<T, M> {
      * {@inheritDoc}
      */
     @Override
-    public void replaceChromosomeForSurvival(IChromosome<T, M>[] population,
+    public void replaceChromosomeForSurvival(Chromosome<T>[] population,
                                                 int rangeStart,
                                                 int rangeEnd) {
 
@@ -53,13 +53,13 @@ public class BinaryTournamentSelector<T, M> implements Selector<T, M> {
 
         if (range > 1) {
             int firstCandidateIndex = rangeStart + (int) Math.floor(random.nextDouble() * range);
-            IChromosome<T, M> c1 = population[firstCandidateIndex];
+            Chromosome<T> c1 = population[firstCandidateIndex];
 
             int secondCandidateIndex = rangeStart + (int) Math.floor(random.nextDouble() * range);
             while (firstCandidateIndex == secondCandidateIndex) {
                 secondCandidateIndex = rangeStart + (int) Math.floor(random.nextDouble() * range);
             }
-            IChromosome<T, M> c2 = population[secondCandidateIndex];
+            Chromosome<T> c2 = population[secondCandidateIndex];
 
             if (c1.getFitness() < c2.getFitness()) {
                 c2 = population[rangeStart];
@@ -77,13 +77,13 @@ public class BinaryTournamentSelector<T, M> implements Selector<T, M> {
 //            return 0;
 //
 //        int firstCandidateIndex = random.getRandNumber(chromosomeList.size());
-//        IChromosome<T, M> c1 = chromosomeList.get(firstCandidateIndex);
+//        IChromosome<T> c1 = chromosomeList.get(firstCandidateIndex);
 //
 //        int secondCandidateIndex = random.getRandNumber(chromosomeList.size());
 //        while (firstCandidateIndex == secondCandidateIndex) {
 //            secondCandidateIndex = random.getRandNumber(chromosomeList.size());
 //        }
-//        IChromosome<T, M> c2 = chromosomeList.get(secondCandidateIndex);
+//        IChromosome<T> c2 = chromosomeList.get(secondCandidateIndex);
 //
 //        if (c1.getFitness() < c2.getFitness())
 //            return firstCandidateIndex;
