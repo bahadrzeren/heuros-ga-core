@@ -21,8 +21,8 @@ public class UniformCrossover<T> implements Crossover<T> {
                             double worstFitness) throws CloneNotSupportedException {
         int res = startingChildIndex;
 
-        Chromosome<T> child1 = (Chromosome<T>) mother.clone();
-        Chromosome<T> child2 = (Chromosome<T>) father.clone();
+        Chromosome<T> childM = (Chromosome<T>) mother.clone();
+        Chromosome<T> childF = (Chromosome<T>) father.clone();
 
         double motherQuality = Math.abs(worstFitness - mother.getFitness());
         double fatherQuality = Math.abs(worstFitness - father.getFitness());
@@ -31,28 +31,15 @@ public class UniformCrossover<T> implements Crossover<T> {
 
         for (int i = 0; i < mother.getChromosomeLength(); i++) {
             if (random.nextDouble() > ratio) {
-                child1.setGeneValue(i, father.getGeneValue(i));
-                child2.setGeneValue(i, mother.getGeneValue(i));
+                childM.setGeneValue(i, father.getGeneValue(i));
+                childF.setGeneValue(i, mother.getGeneValue(i));
             }
         }
 
-        population[res] = child1;
+        population[res] = childM;
         res++;
-        population[res] = child2;
+        population[res] = childF;
         res++;
         return res;
-    }
-
-    /**
-     * Clones the this object.
-     * 
-     * @return Object new cloned object.
-     * 
-     * @throws CloneNotSupportedException is trown if this object doesnt
-     * implements Cloneable interface.
-     */
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
     }
 }

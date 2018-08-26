@@ -22,7 +22,7 @@ public interface GeneticIterationListener extends EventListener {
     /**
      * Metod which is called if an exception occured.
      * 
-     * @param exceptionMessage message of the exception.
+     * @param ex exception thrown.
      */
-    public void onException(String exceptionMessage);
+    public void onException(Exception  ex);
 }

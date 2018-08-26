@@ -52,7 +52,7 @@ public class GeneticOptimizer<T, O> {
 
         while (i < populationSize) {
             chromosome = chromosomeFactory.createChromosome();
-            chromosome.initializeChromosome();
+            chromosome.initializeChromosome(chromosomeFactory.getChromosomeLength());
 
             addable = true;
 
@@ -64,6 +64,7 @@ public class GeneticOptimizer<T, O> {
 
             if (addable) {
                 population[i] = chromosome;
+                this.decoder.decode(chromosome);
                 i++;
             }
         }
@@ -150,7 +151,7 @@ public class GeneticOptimizer<T, O> {
 
     private void decode() {
     	for (int i = 0; i < numOfChildrenGeneratedInLastRound; i++) {
-    		Chromosome<T> child = children[i];
+    		this.decoder.decode(children[i]);
     	}
     }
 
@@ -309,8 +310,7 @@ System.out.println("gen-" + nanoGenTot / maxNumOfIterations +
                 geneticIterationListener.onProgress(maxNumOfIterations, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getFitness()));
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
-            geneticIterationListener.onException(ex.getMessage());
+            geneticIterationListener.onException(ex);
         }
     }
 

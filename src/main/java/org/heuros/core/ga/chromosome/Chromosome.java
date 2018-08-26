@@ -11,17 +11,7 @@ public interface Chromosome<T> extends Cloneable {
      * 
      * @param random Randomization class to be used.
      */
-    public void initializeChromosome();
-
-    /**
-     * Clones the IChromosome object.
-     * 
-     * @return IChromosome new cloned IChromosome object.
-     * 
-     * @throws CloneNotSupportedException is trown if IChromosome object doesnt
-     * implements Cloneable interface.
-     */
-    public Object clone() throws CloneNotSupportedException;
+    public void initializeChromosome(int length);
 
     /**
      * Evaluates whether cand is equal to this chromosome object.
@@ -31,6 +21,8 @@ public interface Chromosome<T> extends Cloneable {
      * @return boolean true if this chromosome object equals to cand.
      */
     public boolean isEqual(Chromosome<T> cand);
+
+    public void setFitness(double value);
 
     /**
      * Gives the current fitness value.
@@ -64,18 +56,27 @@ public interface Chromosome<T> extends Cloneable {
      */
     public void setGeneValue(int index, T value);
 
-    /**
-     * Gives all genes.
-     * 
-     * @return returns all genes.
-     */
-    public T[] getGenes();
+//    /**
+//     * Gives all genes.
+//     * 
+//     * @return returns all genes.
+//     */
+//    public T[] getGenes();
 
     /**
-     * String representation of this IChromosome object.
+     * Clones the IChromosome object.
      * 
-     * @return String information about this IChromosome object.
+     * @return IChromosome new cloned IChromosome object.
+     * 
+     * @throws CloneNotSupportedException is trown if IChromosome object doesnt
+     * implements Cloneable interface.
      */
-    @Override
-    public String toString();
+    public Object clone() throws CloneNotSupportedException;
+
+//    /**
+//     * String representation of this IChromosome object.
+//     * 
+//     * @return String information about this IChromosome object.
+//     */
+//    public String toString();
 }
