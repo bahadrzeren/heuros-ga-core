@@ -31,6 +31,9 @@ public interface Chromosome<T> extends Cloneable {
      */
     public double getFitness();
 
+    public String getInfo();
+    public void setInfo(String value);
+
     /**
      * Gives length of the chromosome.
      * 

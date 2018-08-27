@@ -52,7 +52,6 @@ public class GeneticOptimizer<T, O> {
 
         while (i < populationSize) {
             chromosome = chromosomeFactory.createChromosome();
-            chromosome.initializeChromosome(chromosomeFactory.getChromosomeLength());
 
             addable = true;
 
@@ -249,7 +248,7 @@ public class GeneticOptimizer<T, O> {
 
                 best = getFittestIndividual();
 
-                geneticIterationListener.onProgress(0, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getFitness()));
+                geneticIterationListener.onProgress(0, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getInfo()));
 
                 Chromosome<T> ch = null;
 
@@ -293,6 +292,7 @@ nanoRepTot += nano2 - nano1;
 
                     if (best.getFitness() > ch.getFitness()) {
                         best = (Chromosome<T>) ch.clone();
+                        geneticIterationListener.onProgress(i, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getInfo()));
                         numOfIterationsWOProgress = 0;
                     } else
                         numOfIterationsWOProgress++;
@@ -307,7 +307,7 @@ System.out.println("gen-" + nanoGenTot / maxNumOfIterations +
 					", fit-" + nanoFitTot / maxNumOfIterations +
                     ", rep-" + nanoRepTot / maxNumOfIterations);
 
-                geneticIterationListener.onProgress(maxNumOfIterations, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getFitness()));
+                geneticIterationListener.onProgress(maxNumOfIterations, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getInfo()));
             }
         } catch (Exception ex) {
             geneticIterationListener.onException(ex);
