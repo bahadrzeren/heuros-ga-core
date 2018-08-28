@@ -6,7 +6,9 @@ import java.util.Random;
 /**
  * One point crossover implementation class.
  * 
- * @author Ba
+ * @author bahadrzeren
+ * 
+ * @param <T> Type of the class which is used to represent one single gene.
  */
 public class OnePointCrossover<T> implements Crossover<T> {
 	private static Random random = new Random();

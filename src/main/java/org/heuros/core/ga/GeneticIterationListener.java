@@ -3,8 +3,10 @@ package org.heuros.core.ga;
 import java.util.EventListener;
 
 /**
- * Listener class which is triggered when a genetic iteration is completed.
+ * Listener class which is triggered when a genetic iteration is completed with an improvement.
  * 
+ * @author bahadrzeren
+ *
  */
 public interface GeneticIterationListener extends EventListener {
 
@@ -20,9 +22,9 @@ public interface GeneticIterationListener extends EventListener {
                             String info);
 
     /**
-     * Metod which is called if an exception occured.
+     * Metod which is called if an exception occurs.
      * 
-     * @param ex exception thrown.
+     * @param ex Exception thrown.
      */
     public void onException(Exception  ex);
 }

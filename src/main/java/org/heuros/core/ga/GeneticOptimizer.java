@@ -8,12 +8,13 @@ import org.heuros.core.ga.decoder.Decoder;
 import org.heuros.core.ga.mutation.Mutator;
 
 /**
- * The Main genetic optimizer class.
- * 
- * T is the type of the class which is used to represent one single gene.
- * 
+ * Main genetic optimizer class.
  * Runs all functions according to chosen parameters and implementation classes.
+ * 
+ * @author bahadrzeren
  *
+ * @param <T> Type of the class which is used to represent one single gene.
+ * @param <O> Type of the output data list.
  */
 public class GeneticOptimizer<T, O> {
 

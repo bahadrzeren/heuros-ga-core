@@ -4,6 +4,12 @@ import java.util.Random;
 
 import org.heuros.core.ga.chromosome.Chromosome;
 
+/**
+ * Integer mutation operator that changes gene values as not to exceed a specific limit that is designated by maxGeneValueExc parameter.
+ * 
+ * @author bahadrzeren
+ *
+ */
 public class IntegerGeneMutator implements Mutator<Integer> {
 
 	private static Random random = new Random();

@@ -2,6 +2,13 @@ package org.heuros.core.ga.mutation;
 
 import org.heuros.core.ga.chromosome.Chromosome;
 
+/**
+ * Interface for mutation implementations.
+ * 
+ * @author bahadrzeren
+ *
+ * @param <T> Type of the class which is used to represent one single gene.
+ */
 public interface Mutator<T> {
     /**
      * Performs mutation operation according to the algorithm in the 
@@ -9,7 +16,6 @@ public interface Mutator<T> {
      * 
      * @param chromosome to be mutated.
      * @param mutationRatio ratio of the mutation operation to be performed.
-     * @param random Randomization class to be used.
      * 
      * @return IChromosome<T> new mutated chromosome.
      */

@@ -4,7 +4,11 @@ import org.heuros.core.ga.chromosome.Chromosome;
 
 /**
  * Interface for the selection operators.
+ * Used for offspring selection in crossover and population replacement operations. 
+ * 
+ * @author bahadrzeren
  *
+ * @param <T> Type of the class which is used to represent one single gene.
  */
 public interface Selector<T> {
     /**
@@ -19,8 +23,7 @@ public interface Selector<T> {
     public Chromosome<T> selectChromosomeForReproduction(Chromosome<T>[] population, int range);
 
     /**
-     * Selects a chromosome for population replacement (survival) according to 
-     * the algorithm of the implementing class and returns its index.
+     * Selects a chromosome for population replacement (survival) according to the algorithm of the implementing class.
      * 
      * @param chromosomeList current total population (population + children) of 
      * the genetic optimizer.

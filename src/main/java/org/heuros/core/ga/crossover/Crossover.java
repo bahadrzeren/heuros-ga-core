@@ -2,6 +2,13 @@ package org.heuros.core.ga.crossover;
 
 import org.heuros.core.ga.chromosome.Chromosome;
 
+/**
+ * Interface for crossover implementations.
+ * 
+ * @author bahadrzeren
+ *
+ * @param <T> Type of the class which is used to represent one single gene.
+ */
 public interface Crossover<T> {
     /**
      * Performs crossover operation according to the algorithm in the 

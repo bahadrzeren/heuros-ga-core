@@ -15,6 +15,8 @@ import org.heuros.core.ga.chromosome.Chromosome;
 /**
  * Binary tournament selection implementation of the ISelection interface.
  * 
+ * @author bahadrzeren
+ * 
  * @see Selector
  */
 public class BinaryTournamentSelector<T> implements Selector<T> {
@@ -71,24 +73,5 @@ public class BinaryTournamentSelector<T> implements Selector<T> {
                 population[secondCandidateIndex] = c1;
             }
         }
-
-
-//        if (chromosomeList.size() == 1)
-//            return 0;
-//
-//        int firstCandidateIndex = random.getRandNumber(chromosomeList.size());
-//        IChromosome<T> c1 = chromosomeList.get(firstCandidateIndex);
-//
-//        int secondCandidateIndex = random.getRandNumber(chromosomeList.size());
-//        while (firstCandidateIndex == secondCandidateIndex) {
-//            secondCandidateIndex = random.getRandNumber(chromosomeList.size());
-//        }
-//        IChromosome<T> c2 = chromosomeList.get(secondCandidateIndex);
-//
-//        if (c1.getFitness() < c2.getFitness())
-//            return firstCandidateIndex;
-//        else
-//            return secondCandidateIndex;
-
     }
 }
