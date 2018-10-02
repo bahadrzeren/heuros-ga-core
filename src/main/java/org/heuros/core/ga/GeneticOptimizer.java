@@ -39,7 +39,7 @@ public class GeneticOptimizer<T, O> {
 
     private float mutationRate = 0.01f;
 
-    private GeneticIterationListener geneticIterationListener = null;
+    private GeneticIterationListener<T> geneticIterationListener = null;
 
     private boolean initializePopulation() {
 
@@ -249,7 +249,7 @@ public class GeneticOptimizer<T, O> {
 
                 best = getFittestIndividual();
 
-                geneticIterationListener.onProgress(0, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getInfo()));
+                geneticIterationListener.onIterate(0, (System.nanoTime() - optStartTime) / 1000000000.0, best);
 
                 Chromosome<T> ch = null;
 
@@ -293,10 +293,12 @@ nanoRepTot += nano2 - nano1;
 
                     if (best.getFitness() > ch.getFitness()) {
                         best = (Chromosome<T>) ch.clone();
-                        geneticIterationListener.onProgress(i, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getInfo()));
+                        geneticIterationListener.onProgress(i, (System.nanoTime() - optStartTime) / 1000000000.0, best);
                         numOfIterationsWOProgress = 0;
                     } else
                         numOfIterationsWOProgress++;
+
+                    geneticIterationListener.onIterate(i, (System.nanoTime() - optStartTime) / 1000000000.0, best);
 
                     if ((numOfIterationsWOProgress >= maxNumOfIterationsWOProgress)
                             || ((System.nanoTime() - optStartTime) >= maxElapsedTimeInNanoSecs))
@@ -308,7 +310,7 @@ System.out.println("gen-" + nanoGenTot / maxNumOfIterations +
 					", fit-" + nanoFitTot / maxNumOfIterations +
                     ", rep-" + nanoRepTot / maxNumOfIterations);
 
-                geneticIterationListener.onProgress(maxNumOfIterations, (System.nanoTime() - optStartTime) / 1000000000.0, String.valueOf(best.getInfo()));
+                geneticIterationListener.onIterate(maxNumOfIterations, (System.nanoTime() - optStartTime) / 1000000000.0, best);
             }
         } catch (Exception ex) {
             geneticIterationListener.onException(ex);
@@ -432,11 +434,11 @@ System.out.println("gen-" + nanoGenTot / maxNumOfIterations +
 		return this;
 	}
 
-	public GeneticIterationListener getGeneticIterationListener() {
+	public GeneticIterationListener<T> getGeneticIterationListener() {
 		return geneticIterationListener;
 	}
 
-	public GeneticOptimizer<T, O> setGeneticIterationListener(GeneticIterationListener geneticIterationListener) {
+	public GeneticOptimizer<T, O> setGeneticIterationListener(GeneticIterationListener<T> geneticIterationListener) {
 		this.geneticIterationListener = geneticIterationListener;
 		return this;
 	}
