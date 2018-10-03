@@ -152,6 +152,7 @@ public class GeneticOptimizer<T, O> {
     private void decode() {
     	for (int i = 0; i < numOfChildrenGeneratedInLastRound; i++) {
     		this.decoder.decode(children[i]);
+//    		System.out.println("Decode of child " + i + " is completed!");
     	}
     }
 
@@ -268,11 +269,15 @@ nano1 = System.nanoTime();
 
                     generateChildren(i, numOfIterationsWOProgress);
 
+//System.out.println("Crossover phase is completed!");
+
 nano2 = System.nanoTime();
 nanoGenTot += nano2 - nano1;
 nano1 = System.nanoTime();
 
 					mutateChildren(i, numOfIterationsWOProgress);
+
+//System.out.println("Mutation phase is completed!");
 
 nano2 = System.nanoTime();
 nanoMutTot += nano2 - nano1;
@@ -280,11 +285,15 @@ nano1 = System.nanoTime();
 
 					decode();
 
+//System.out.println("Decoding phase is completed!");
+
 nano2 = System.nanoTime();
 nanoFitTot += nano2 - nano1;
 nano1 = System.nanoTime();
 
                     replacePopulation();
+
+//System.out.println("Population replace is completed!");
 
 nano2 = System.nanoTime();
 nanoRepTot += nano2 - nano1;
