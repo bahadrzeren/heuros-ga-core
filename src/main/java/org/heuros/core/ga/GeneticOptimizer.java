@@ -1,6 +1,10 @@
 package org.heuros.core.ga;
 
 import org.heuros.core.ga.chromosome.ChromosomeFactory;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.heuros.core.ga.chromosome.Chromosome;
 import org.heuros.core.ga.selection.Selector;
 import org.heuros.core.ga.crossover.Crossover;
@@ -39,6 +43,9 @@ public class GeneticOptimizer<T, O> {
 
     private float mutationRate = 0.01f;
 
+    private boolean runParallel = false;
+	private ExecutorService executorService = null;
+
     private GeneticIterationListener<T> geneticIterationListener = null;
 
     private boolean initializePopulation() {
@@ -65,6 +72,7 @@ public class GeneticOptimizer<T, O> {
             if (addable) {
                 population[i] = chromosome;
                 this.decoder.decode(chromosome);
+                this.executorService.
                 i++;
             }
         }
@@ -238,6 +246,8 @@ public class GeneticOptimizer<T, O> {
 
         population = new Chromosome[populationSize + 2 * minNumOfChildren];
         children = new Chromosome[2 * minNumOfChildren];
+
+        executorService = Executors.newFixedThreadPool(minNumOfChildren * 2);
 
         int numOfIterationsWOProgress = 0;
 
@@ -440,6 +450,15 @@ System.out.println("gen-" + nanoGenTot / maxNumOfIterations +
 
 	public GeneticOptimizer<T, O> setMutationRate(float mutationRate) {
 		this.mutationRate = mutationRate;
+		return this;
+	}
+
+	public boolean isRunParallel() {
+		return runParallel;
+	}
+
+	public GeneticOptimizer<T, O> setRunParallel(boolean runParallel) {
+		this.runParallel = runParallel;
 		return this;
 	}
 
