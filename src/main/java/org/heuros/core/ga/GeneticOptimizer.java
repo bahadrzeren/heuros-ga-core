@@ -2,13 +2,19 @@ package org.heuros.core.ga;
 
 import org.heuros.core.ga.chromosome.ChromosomeFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
+import org.apache.log4j.Logger;
 import org.heuros.core.ga.chromosome.Chromosome;
 import org.heuros.core.ga.selection.Selector;
 import org.heuros.core.ga.crossover.Crossover;
 import org.heuros.core.ga.decoder.Decoder;
+import org.heuros.core.ga.decoder.DecoderCaller;
 import org.heuros.core.ga.mutation.Mutator;
 
 /**
@@ -22,7 +28,9 @@ import org.heuros.core.ga.mutation.Mutator;
  */
 public class GeneticOptimizer<T, O> {
 
-    private ChromosomeFactory<T> chromosomeFactory = null;
+	private static Logger logger = Logger.getLogger(GeneticOptimizer.class);
+
+	private ChromosomeFactory<T> chromosomeFactory = null;
     private Selector<T> selector = null;
     private Crossover<T> crossoverOperator = null;
     private Mutator<T> mutator = null;
@@ -58,6 +66,10 @@ public class GeneticOptimizer<T, O> {
         Chromosome<T> chromosome = null;
         boolean addable = true;
 
+        List<Future<List<O>>> futures = null;
+        if (runParallel)
+        	futures = new ArrayList<Future<List<O>>>();
+
         while (i < populationSize) {
             chromosome = chromosomeFactory.createChromosome();
 
@@ -71,11 +83,26 @@ public class GeneticOptimizer<T, O> {
 
             if (addable) {
                 population[i] = chromosome;
-                this.decoder.decode(chromosome);
-                this.executorService.
+                if (runParallel)
+                	futures.add(this.executorService.submit(new DecoderCaller<T, O>(this.decoder, chromosome)));
+                else
+                	this.decoder.decode(chromosome);
                 i++;
             }
         }
+
+        if (runParallel) {
+        	for (int j = 0; j < futures.size(); j++) {
+        		try {
+					futures.get(j).get();
+				} catch (InterruptedException e) {
+					logger.error(e);
+				} catch (ExecutionException e) {
+					logger.error(e);
+				}
+        	}
+        }
+
         return true;
     }
 
@@ -158,10 +185,28 @@ public class GeneticOptimizer<T, O> {
     }
 
     private void decode() {
-    	for (int i = 0; i < numOfChildrenGeneratedInLastRound; i++) {
-    		this.decoder.decode(children[i]);
-//    		System.out.println("Decode of child " + i + " is completed!");
+        List<Future<List<O>>> futures = null;
+        if (runParallel)
+        	futures = new ArrayList<Future<List<O>>>();
+
+        for (int i = 0; i < numOfChildrenGeneratedInLastRound; i++) {
+            if (runParallel)
+            	futures.add(this.executorService.submit(new DecoderCaller<T, O>(this.decoder, children[i])));
+            else
+        		this.decoder.decode(children[i]);
     	}
+
+        if (runParallel) {
+        	for (int j = 0; j < futures.size(); j++) {
+        		try {
+					futures.get(j).get();
+				} catch (InterruptedException e) {
+					logger.error(e);
+				} catch (ExecutionException e) {
+					logger.error(e);
+				}
+        	}
+        }
     }
 
     private void replacePopulation() {
@@ -256,11 +301,11 @@ public class GeneticOptimizer<T, O> {
         try {
             if (initializePopulation()) {
 
-                orderPopulation();
+                this.orderPopulation();
 
-                best = getFittestIndividual();
+                best = this.getFittestIndividual();
 
-                geneticIterationListener.onIterate(0, (System.nanoTime() - optStartTime) / 1000000000.0, best);
+                this.geneticIterationListener.onIterate(0, (System.nanoTime() - optStartTime) / 1000000000.0, best);
 
                 Chromosome<T> ch = null;
 
@@ -271,13 +316,13 @@ long nanoMutTot = 0l;
 long nanoFitTot = 0l;
 long nanoRepTot = 0l;
 
-                for (int i = 1; i <= maxNumOfIterations; i++) {
+                for (int i = 1; i <= this.maxNumOfIterations; i++) {
 
-                	numOfChildrenGeneratedInLastRound = 0;
+                	this.numOfChildrenGeneratedInLastRound = 0;
 
 nano1 = System.nanoTime();
 
-                    generateChildren(i, numOfIterationsWOProgress);
+					this.generateChildren(i, numOfIterationsWOProgress);
 
 //System.out.println("Crossover phase is completed!");
 
@@ -285,7 +330,7 @@ nano2 = System.nanoTime();
 nanoGenTot += nano2 - nano1;
 nano1 = System.nanoTime();
 
-					mutateChildren(i, numOfIterationsWOProgress);
+					this.mutateChildren(i, numOfIterationsWOProgress);
 
 //System.out.println("Mutation phase is completed!");
 
@@ -293,7 +338,7 @@ nano2 = System.nanoTime();
 nanoMutTot += nano2 - nano1;
 nano1 = System.nanoTime();
 
-					decode();
+					this.decode();
 
 //System.out.println("Decoding phase is completed!");
 
@@ -301,35 +346,35 @@ nano2 = System.nanoTime();
 nanoFitTot += nano2 - nano1;
 nano1 = System.nanoTime();
 
-                    replacePopulation();
+					this.replacePopulation();
 
 //System.out.println("Population replace is completed!");
 
 nano2 = System.nanoTime();
 nanoRepTot += nano2 - nano1;
 
-                    ch = getFittestIndividual();
+					ch = getFittestIndividual();
 
-                    if (best.getFitness() > ch.getFitness()) {
-                        best = (Chromosome<T>) ch.clone();
-                        geneticIterationListener.onProgress(i, (System.nanoTime() - optStartTime) / 1000000000.0, best);
-                        numOfIterationsWOProgress = 0;
+                    if (this.best.getFitness() > ch.getFitness()) {
+                    	this.best = (Chromosome<T>) ch.clone();
+                    	this.geneticIterationListener.onProgress(i, (System.nanoTime() - optStartTime) / 1000000000.0, this.best);
+                    	numOfIterationsWOProgress = 0;
                     } else
-                        numOfIterationsWOProgress++;
+                    	numOfIterationsWOProgress++;
 
-                    geneticIterationListener.onIterate(i, (System.nanoTime() - optStartTime) / 1000000000.0, best);
+                    this.geneticIterationListener.onIterate(i, (System.nanoTime() - optStartTime) / 1000000000.0, this.best);
 
-                    if ((numOfIterationsWOProgress >= maxNumOfIterationsWOProgress)
-                            || ((System.nanoTime() - optStartTime) >= maxElapsedTimeInNanoSecs))
+                    if ((numOfIterationsWOProgress >= this.maxNumOfIterationsWOProgress)
+                            || ((System.nanoTime() - optStartTime) >= this.maxElapsedTimeInNanoSecs))
                         break;
                 }
 
-System.out.println("gen-" + nanoGenTot / maxNumOfIterations +
-					", mut-" + nanoMutTot / maxNumOfIterations +
-					", fit-" + nanoFitTot / maxNumOfIterations +
-                    ", rep-" + nanoRepTot / maxNumOfIterations);
+System.out.println("gen-" + nanoGenTot / this.maxNumOfIterations +
+					", mut-" + nanoMutTot / this.maxNumOfIterations +
+					", fit-" + nanoFitTot / this.maxNumOfIterations +
+                    ", rep-" + nanoRepTot / this.maxNumOfIterations);
 
-                geneticIterationListener.onIterate(maxNumOfIterations, (System.nanoTime() - optStartTime) / 1000000000.0, best);
+				this.geneticIterationListener.onIterate(this.maxNumOfIterations, (System.nanoTime() - optStartTime) / 1000000000.0, this.best);
             }
         } catch (Exception ex) {
             geneticIterationListener.onException(ex);
