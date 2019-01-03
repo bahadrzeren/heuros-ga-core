@@ -14,7 +14,7 @@ public interface Chromosome<T> extends Cloneable {
 	 * 
 	 * @param length Length of the chromosome.
 	 */
-    public void initializeChromosome(int length);
+    public void initializeChromosome(int length, T setSize);
 
     public boolean isEqual(Chromosome<T> cand);
     public void setFitness(double value);
