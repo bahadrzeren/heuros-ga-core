@@ -379,6 +379,7 @@ System.out.println("gen-" + nanoGenTot / this.maxNumOfIterations +
         } catch (Exception ex) {
             geneticIterationListener.onException(ex);
         }
+        executorService.shutdown();
     }
 
 	public ChromosomeFactory<T> getChromosomeFactory() {
