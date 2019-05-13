@@ -2,6 +2,7 @@ package org.heuros.core.ga.crossover;
 
 import java.util.Random;
 
+import org.heuros.core.ga.ISolutionCost;
 import org.heuros.core.ga.chromosome.Chromosome;
 
 /**
@@ -20,16 +21,19 @@ public class UniformCrossover<T> implements Crossover<T> {
                             int startingChildIndex,
                             Chromosome<T> mother,
                             Chromosome<T> father,
-                            double worstFitness) throws CloneNotSupportedException {
+                            ISolutionCost worstFitness) throws CloneNotSupportedException {
         int res = startingChildIndex;
 
         Chromosome<T> childM = (Chromosome<T>) mother.clone();
         Chromosome<T> childF = (Chromosome<T>) father.clone();
 
-        double motherQuality = Math.abs(worstFitness - mother.getFitness());
-        double fatherQuality = Math.abs(worstFitness - father.getFitness());
+//      double motherQuality = Math.abs(worstFitness - mother.getFitness());
+//      double fatherQuality = Math.abs(worstFitness - father.getFitness());
+//      double ratio = motherQuality / (motherQuality + fatherQuality);
 
-        double ratio = motherQuality / (motherQuality + fatherQuality);
+        double motherQuality = Math.abs(mother.getFitness().getDistance(worstFitness));
+		double fatherQuality = Math.abs(father.getFitness().getDistance(worstFitness));
+		double ratio = motherQuality / (motherQuality + fatherQuality);
 
         for (int i = 0; i < mother.getChromosomeLength(); i++) {
             if (random.nextDouble() > ratio) {

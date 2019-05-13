@@ -1,5 +1,7 @@
 package org.heuros.core.ga.chromosome;
 
+import org.heuros.core.ga.ISolutionCost;
+
 /**
  * General purpose chromosome interface.
  * 
@@ -17,8 +19,8 @@ public interface Chromosome<T> extends Cloneable {
     public void initializeChromosome(int length, T setSize);
 
     public boolean isEqual(Chromosome<T> cand);
-    public void setFitness(double value);
-    public double getFitness();
+    public void setFitness(ISolutionCost value);
+    public ISolutionCost getFitness();
 
     /**
      * Getter for chromosome brief information. May include fitness and specific KPI values.

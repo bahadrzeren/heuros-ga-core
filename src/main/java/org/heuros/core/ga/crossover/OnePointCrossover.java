@@ -1,5 +1,6 @@
 package org.heuros.core.ga.crossover;
 
+import org.heuros.core.ga.ISolutionCost;
 import org.heuros.core.ga.chromosome.Chromosome;
 import java.util.Random;
 
@@ -19,7 +20,7 @@ public class OnePointCrossover<T> implements Crossover<T> {
                             int startingChildIndex,
                             Chromosome<T> mother,
                             Chromosome<T> father,
-                            double worstFitness) throws CloneNotSupportedException {
+                            ISolutionCost worstFitness) throws CloneNotSupportedException {
         int res = startingChildIndex;
 
         Chromosome<T> child1 = (Chromosome<T>) mother.clone();

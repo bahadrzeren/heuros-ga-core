@@ -36,7 +36,7 @@ public class BinaryTournamentSelector<T> implements Selector<T> {
         while ((c1 == c2) || c1.isEqual(c2))
             c2 = population[(int) Math.floor(random.nextDouble() * range)];
 
-        if (c1.getFitness() < c2.getFitness())
+        if (c1.getFitness().doesPerformBetterThan(c2.getFitness()))
             return c1;
         else
             return c2;
@@ -63,7 +63,7 @@ public class BinaryTournamentSelector<T> implements Selector<T> {
             }
             Chromosome<T> c2 = population[secondCandidateIndex];
 
-            if (c1.getFitness() < c2.getFitness()) {
+            if (c1.getFitness().doesPerformBetterThan(c2.getFitness())) {
                 c2 = population[rangeStart];
                 population[rangeStart] = c1;
                 population[firstCandidateIndex] = c2;

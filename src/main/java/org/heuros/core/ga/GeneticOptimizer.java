@@ -115,7 +115,7 @@ public class GeneticOptimizer<T, O> {
                 chromosome = population[i];
                 iChromosome = population[j];
 
-                if (chromosome.getFitness() > iChromosome.getFitness()) {
+                if (iChromosome.getFitness().doesPerformBetterThan(chromosome.getFitness())) {
                     population[i] = iChromosome;
                     population[j] = chromosome;
                 }
@@ -249,7 +249,7 @@ public class GeneticOptimizer<T, O> {
                 chromosome = population[i];
                 iChromosome = population[j];
 
-                if (chromosome.getFitness() > iChromosome.getFitness()) {
+                if (iChromosome.getFitness().doesPerformBetterThan(chromosome.getFitness())) {
                     population[i] = iChromosome;
                     population[j] = chromosome;
                 }
@@ -355,7 +355,7 @@ nanoRepTot += nano2 - nano1;
 
 					ch = getFittestIndividual();
 
-                    if (this.best.getFitness() > ch.getFitness()) {
+                    if (ch.getFitness().doesPerformBetterThan(this.best.getFitness())) {
                     	this.best = (Chromosome<T>) ch.clone();
                     	this.geneticIterationListener.onProgress(i, (System.nanoTime() - optStartTime) / 1000000000.0, this.best);
                     	numOfIterationsWOProgress = 0;

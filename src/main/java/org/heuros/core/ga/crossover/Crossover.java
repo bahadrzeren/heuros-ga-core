@@ -1,5 +1,6 @@
 package org.heuros.core.ga.crossover;
 
+import org.heuros.core.ga.ISolutionCost;
 import org.heuros.core.ga.chromosome.Chromosome;
 
 /**
@@ -29,5 +30,5 @@ public interface Crossover<T> {
                             int startingChildIndex,
                             Chromosome<T> mother,
                             Chromosome<T> father,
-                            double worstFitness) throws CloneNotSupportedException;
+                            ISolutionCost worstFitness) throws CloneNotSupportedException;
 }
